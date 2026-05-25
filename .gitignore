@@ -1,0 +1,24 @@
+# .NET
+bin/
+obj/
+*.user
+*.suo
+.vs/
+*.rsuser
+*.userosscache
+ 
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.env
+venv/
+env/
+ 
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+ 
+# Logs
+*.log
