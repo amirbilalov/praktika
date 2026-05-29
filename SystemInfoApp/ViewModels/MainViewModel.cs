@@ -4,6 +4,8 @@ using System.Runtime.CompilerServices;
 using System.Windows;
 using SystemInfoApp.Models;
 using SystemInfoApp.Services;
+using System.IO;
+using System.Text.Json;
 
 namespace SystemInfoApp.ViewModels;
 
@@ -104,7 +106,8 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
         try
         {
             await Task.WhenAll(tasks);
-            StatusMessage = "Данные получены";
+            await Task.WhenAll(tasks);
+            await SaveToFileAsync();
         }
         catch (OperationCanceledException)
         {
@@ -118,6 +121,25 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
         {
             IsBusy = false;
         }
+    }
+
+    private async Task SaveToFileAsync()
+    {
+        var lines = Items
+            .Select(item => $"{item.Name}: {item.Value}")
+            .ToArray();
+
+        var outputPath = Path.Combine(
+            Directory.GetParent(AppContext.BaseDirectory)!.Parent!.Parent!.Parent!.FullName,
+            "system_info.json");
+
+        var json = JsonSerializer.Serialize(lines, new JsonSerializerOptions
+        {
+            WriteIndented = true,
+            Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+        });
+
+        await File.WriteAllTextAsync(outputPath, json);
     }
 
     private static async Task UpdateItemAsync(
